@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+
+  mongo:
+    image: mongo
+    restart: always
+    container_name: mongo
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+        - "8085:8081"
+  api:
+    build:
+      context: .
+      dockerfile: docker/api/Dockerfile
+    ports:
+        - "8080:8080"
+    environment:
+      DB_URI: mongodb://mongo:27017
+      SCORING_SERVER: http://scoring:8080
+
+  scoring:
+    build:
+      context: .
+      dockerfile: docker/scoring/Dockerfile
+    ports:
+        - "8081:8080"
+    environment:
+      DB_URI: mongodb://mongo:27017
+    hostname: scoring
